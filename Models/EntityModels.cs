@@ -53,6 +53,7 @@ namespace ClientService.Models
         public string ProductName { get; set; }
         public double ActualPrice { get; set; }
         public string ImageUrl { get; set; }
+        public string MarketUrl { get; set; }
         public int Remains { get; set; }
         public bool IsDump { get; set; }
         public double MaxPrice { get; set; }
@@ -60,7 +61,7 @@ namespace ClientService.Models
     }
     public class ProductPoint
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string MerchantProductCode { get; set; } = string.Empty;
         public int LoanPeriod { get; set; }
         public string CityCode { get; set; } = string.Empty;
@@ -69,7 +70,7 @@ namespace ClientService.Models
         public string PointCode { get; set; } = string.Empty;
         public string PointName { get; set; } = string.Empty;
         public int Amount { get; set; }
-        public decimal Price { get; set; }
+        public double Price { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

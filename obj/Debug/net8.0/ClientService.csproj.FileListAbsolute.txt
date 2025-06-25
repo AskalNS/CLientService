@@ -147,4 +147,8 @@ C:\Users\Pc\Desktop\BOT\ClientService\ClientService\obj\Debug\net8.0\refint\Clie
 C:\Users\Pc\Desktop\BOT\ClientService\ClientService\obj\Debug\net8.0\ClientService.pdb
 C:\Users\Pc\Desktop\BOT\ClientService\ClientService\obj\Debug\net8.0\ClientService.genruntimeconfig.cache
 C:\Users\Pc\Desktop\BOT\ClientService\ClientService\obj\Debug\net8.0\ref\ClientService.dll
+C:\Users\Pc\Desktop\BOT\ClientService\ClientService\obj\Debug\net8.0\ClientService.sourcelink.json
 C:\Users\Pc\Desktop\BOT\ClientService\ClientService\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+C:\Users\Pc\Desktop\BOT\ClientService\ClientService\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\Users\Pc\Desktop\BOT\ClientService\ClientService\bin\Debug\net8.0\SendGrid.dll
+C:\Users\Pc\Desktop\BOT\ClientService\ClientService\bin\Debug\net8.0\StarkbankEcdsa.dll

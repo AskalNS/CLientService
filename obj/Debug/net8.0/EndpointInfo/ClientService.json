@@ -67,7 +67,7 @@
         }
       }
     },
-    "/api/ClientService/GetTable": {
+    "/api/ClientService/UpdateTable": {
       "get": {
         "tags": [
           "ClientService"
@@ -79,7 +79,7 @@
         }
       }
     },
-    "/api/ClientService/UpdateTable": {
+    "/api/ClientService/GetTable": {
       "get": {
         "tags": [
           "ClientService"
@@ -224,6 +224,52 @@
         },
         "additionalProperties": false
       },
+      "Setting": {
+        "type": "object",
+        "properties": {
+          "merchantProductCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "productName": {
+            "type": "string",
+            "nullable": true
+          },
+          "actualPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "marketUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "remains": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "isDump": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "maxPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "minPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "UserDTO": {
         "type": "object",
         "properties": {
@@ -240,6 +286,19 @@
       },
       "UserSettingsDTO": {
         "type": "object",
+        "properties": {
+          "maxPersent": {
+            "type": "number",
+            "format": "double"
+          },
+          "settings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Setting"
+            },
+            "nullable": true
+          }
+        },
         "additionalProperties": false
       },
       "WeatherForecast": {

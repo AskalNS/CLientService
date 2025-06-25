@@ -51,6 +51,7 @@ namespace ClientService.Controllers
             {
                 HttpOnly = true,
                 Secure = true,
+                SameSite = SameSiteMode.None,
                 Expires = DateTime.Now.AddMinutes(30)
             };
             Response.Cookies.Append("AuthToken", token, cookieOptions);
@@ -73,8 +74,8 @@ namespace ClientService.Controllers
 
 
 
-        [HttpGet("GetTable")]
-        public async Task<IActionResult> GetTable()
+        [HttpGet("UpdateTable")]
+        public async Task<IActionResult> UpdateTable()
         {
             var token = Request.Cookies["AuthToken"];
             if (string.IsNullOrEmpty(token)) return Unauthorized("Token not found");
@@ -87,8 +88,8 @@ namespace ClientService.Controllers
 
 
 
-        [HttpGet("UpdateTable")]
-        public async Task<IActionResult> UpdateTable()
+        [HttpGet("GetTable")]
+        public async Task<IActionResult> GetTable()
         {
             var token = Request.Cookies["AuthToken"];
             if (string.IsNullOrEmpty(token)) return Unauthorized("Token not found");
@@ -113,7 +114,6 @@ namespace ClientService.Controllers
 
             return await _clientService.SetTableAsync(userSettingsDto, userId);
         }
-
 
 
 

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ClientService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250623200638_UpdateProductPoints")]
-    partial class UpdateProductPoints
+    [Migration("20250624183345_restart")]
+    partial class restart
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -91,11 +91,9 @@ namespace ClientService.Migrations
 
             modelBuilder.Entity("ClientService.Models.ProductPoint", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Amount")
                         .HasColumnType("integer");
@@ -130,8 +128,8 @@ namespace ClientService.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
+                    b.Property<double>("Price")
+                        .HasColumnType("double precision");
 
                     b.HasKey("Id");
 
@@ -175,6 +173,10 @@ namespace ClientService.Migrations
 
                     b.Property<bool>("IsDump")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("MarketUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<double>("MaxPrice")
                         .HasColumnType("double precision");

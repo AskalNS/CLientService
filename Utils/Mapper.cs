@@ -32,14 +32,15 @@ namespace ClientService.Utils
                 UserId = userId,
                 MerchantProductCode = setting.MerchantProductCode,
                 ProductName = setting.ProductName,
-                ActualPrice = setting.ActualPrice,
+                ActualPrice = setting.ActualPrice.Value,
                 ImageUrl = setting.ImageUrl,
-                Remains = setting.Remains,
-                IsDump = setting.IsDump,
-                MaxPrice = setting.MaxPrice,
-                MinPrice = setting.MinPrice
+                Remains = setting.Remains.Value,
+                IsDump = setting.IsDump.Value,
+                MaxPrice = setting.MaxPrice.Value,
+                MinPrice = setting.MinPrice.Value
             };
         }
 
+    
     }
 }

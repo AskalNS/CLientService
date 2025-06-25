@@ -53,11 +53,11 @@ namespace ClientService.Utils
             }
         }
 
-        public async Task<List<ProductPoint>> GetSellerProductsAsync(string email, string password, string phoneNumber)
+        public async Task<List<Setting>> GetSellerProductsAsync(string email, string password, string phoneNumber, Guid userId)
         {
-            List<ProductPoint> allProduct = new List<ProductPoint>();
+            List<Setting> allProduct = new List<Setting>();
 
-            var token = await LoginAsync(email, password);
+            var token = await LoginAsync(email, password); //TODO Нужно сохранить в статике
             if (string.IsNullOrEmpty(token))
             {
                 _logger.LogError("Не удалось получить токен.");
@@ -120,11 +120,11 @@ namespace ClientService.Utils
                     {
                         var city = JsonSerializer.Deserialize<Dictionary<string, object>>(cityEntry["city"].ToString());
                         var points = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(cityEntry["points"].ToString());
-                        var price = ((JsonElement)cityEntry["price"]).GetDecimal();
+                        var price = ((JsonElement)cityEntry["price"]).GetDouble();
 
                         foreach (var point in points)
                         {
-                            var entity = new ProductPoint
+                            var fullInfoEntity = new ProductPoint
                             {
                                 MerchantProductCode = merchantProductCode,
                                 LoanPeriod = loanPeriod,
@@ -138,15 +138,51 @@ namespace ClientService.Utils
                             };
 
                             // проверка на дубликаты (по constraint)
-                            var exists = _context.ProductPoints.FirstOrDefault(p => p.MerchantProductCode == entity.MerchantProductCode);
+                            var exists = _context.ProductPoints.FirstOrDefault(p => p.MerchantProductCode == fullInfoEntity.MerchantProductCode);
 
-                            if (exists == null) _context.ProductPoints.Add(entity);
+                            if (exists == null) _context.ProductPoints.Add(fullInfoEntity);
                             else
                             {
-                                exists.Amount = entity.Amount;
+                                _context.ProductPoints.Remove(exists);
+                                _context.ProductPoints.Add(fullInfoEntity);
                             }
+
+
+                            if (!product.TryGetValue("name", out var nameObj)) continue;
+                            var pruductName = nameObj.ToString();
+
+                            if (!product.TryGetValue("imageUrl", out var imageUrlObj)) continue;
+                            var pruductImageUrl= imageUrlObj.ToString();
+
+                            if (!product.TryGetValue("marketUrl", out var marketUrlObj)) continue;
+                            var pruductMarketUrl = marketUrlObj.ToString();
+
+                            var userSettin = new UserSettings()
+                            {
+                                UserId = userId,
+                                MerchantProductCode = fullInfoEntity.MerchantProductCode,
+                                ProductName = pruductName,
+                                ActualPrice = fullInfoEntity.Price,
+                                ImageUrl = pruductImageUrl,
+                                MarketUrl = pruductMarketUrl,
+                                Remains = fullInfoEntity.Amount,
+                                IsDump = false,
+                                MaxPrice = 0,
+                                MinPrice = 0
+                            };
+
+                            var existsSetting = _context.UserSettings.FirstOrDefault(p => p.MerchantProductCode == fullInfoEntity.MerchantProductCode);
+
+                            if (existsSetting == null) _context.UserSettings.Add(userSettin);
+                            else
+                            {
+                                _context.UserSettings.Remove(existsSetting);
+                                _context.UserSettings.Add(userSettin);
+                            }
+
+
                             await _context.SaveChangesAsync();
-                            allProduct.Add(exists);
+                            allProduct.Add(Mapper.ToSetting(userSettin));
                         }
                     }
 

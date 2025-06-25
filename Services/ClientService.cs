@@ -8,6 +8,7 @@ using ClientService.Utils;
 using WebApplication1.Utils;
 using System.Numerics;
 using Microsoft.VisualBasic;
+using SendGrid.Helpers.Errors.Model;
 
 namespace ClientService.Services
 {
@@ -127,27 +128,23 @@ namespace ClientService.Services
 
         public async Task<IActionResult> GetTableAsync(string userID)
         {
+            UserSettingsDTO usersettingDTO = new UserSettingsDTO();
+
             Guid guid = Guid.Parse(userID);
             var halykCredential = await _context.HalykCredentials.FirstOrDefaultAsync(h => h.UserId == guid);
             var user = await _context.Users.FirstOrDefaultAsync(h => h.Id == guid);
 
-            if (halykCredential == null) throw new UnauthorizedAccessException("Access denied");
-            if (user == null) throw new UnauthorizedAccessException("Access denied");
+            if (halykCredential == null) throw new ForbiddenException("Access denied");
+            if (user == null) throw new ForbiddenException("Access denied");
 
-            var products = await _halykService.GetSellerProductsAsync(halykCredential.Login, _encryptionUtils.Decrypt(halykCredential.EncriptPassword, guid), user.PhoneNumber);
+            var products = await _halykService.GetSellerProductsAsync(halykCredential.Login, _encryptionUtils.Decrypt(halykCredential.EncriptPassword, guid), user.PhoneNumber, guid);
 
-            //products.ForEach(x =>
-            //{
-            //    UserSettings exist = _context.UserSettings.FirstOrDefault(y => y.MerchantProductCode == x.MerchantProductCode);
-
-            //    UserSettings setting = new()
-            //    {
-
-            //    };
-
-            //    if (exist)
-
-            //});
+            usersettingDTO.MaxPersent = 0;
+            usersettingDTO.settings = new List<Setting>();
+            products.ForEach(x =>
+            {
+                usersettingDTO.settings.Add(x);
+            });
 
             return new OkResult();
         }
@@ -159,9 +156,11 @@ namespace ClientService.Services
 
             var interUser = _context.IntegratedUsers.FirstOrDefault(x => x.UserId == guid);
             userSettingDTO.MaxPersent = interUser == null ? 0 : interUser.MaxPersent;
+            userSettingDTO.settings = new List<Setting>();
 
-            var settings = _context.UserSettings.Where(x => x.UserId == guid);
-            await settings.ForEachAsync(x =>
+            var settings = _context.UserSettings.Where(x => x.UserId == guid).ToList();
+
+            settings.ForEach(x =>
             {
                 userSettingDTO.settings.Add(Mapper.ToSetting(x));
             });
@@ -173,8 +172,11 @@ namespace ClientService.Services
         {
             Guid guid = Guid.Parse(userId);
             IntegratedUsers interUser = await _context.IntegratedUsers.FirstOrDefaultAsync(x => x.UserId == guid);
-            interUser.MaxPersent = userSettingsDto.MaxPersent;
-            _context.SaveChanges();
+            if (interUser != null)
+            {
+                interUser.MaxPersent = userSettingsDto.MaxPersent;
+                _context.SaveChanges();
+            }
 
             foreach (var item in userSettingsDto.settings)
             {
@@ -183,14 +185,9 @@ namespace ClientService.Services
                 if (userSettings == null) _context.UserSettings.Add(Mapper.ToUserSettings(item, guid));
                 else
                 {
-                    userSettings.MerchantProductCode = item.MerchantProductCode;
-                    userSettings.ProductName = item.ProductName;
-                    userSettings.ActualPrice = item.ActualPrice;
-                    userSettings.ImageUrl = item.ImageUrl;
-                    userSettings.Remains = item.Remains;
-                    userSettings.IsDump = item.IsDump;
-                    userSettings.MaxPrice = item.MaxPrice;
-                    userSettings.MinPrice = item.MinPrice;
+                    userSettings.IsDump = item.IsDump.HasValue ? item.IsDump.Value : false;
+                    userSettings.MaxPrice = item.MaxPrice.HasValue ? item.MaxPrice.Value : 0d ;
+                    userSettings.MinPrice = item.MinPrice.HasValue ? item.MinPrice.Value : 0d;
                 }
 
                 _context.SaveChanges();

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ClientService.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class restart : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -54,6 +54,27 @@ namespace ClientService.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductPoints",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    MerchantProductCode = table.Column<string>(type: "text", nullable: false),
+                    LoanPeriod = table.Column<int>(type: "integer", nullable: false),
+                    CityCode = table.Column<string>(type: "text", nullable: false),
+                    CityName = table.Column<string>(type: "text", nullable: false),
+                    CityNameRu = table.Column<string>(type: "text", nullable: false),
+                    PointCode = table.Column<string>(type: "text", nullable: false),
+                    PointName = table.Column<string>(type: "text", nullable: false),
+                    Amount = table.Column<int>(type: "integer", nullable: false),
+                    Price = table.Column<double>(type: "double precision", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductPoints", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -76,6 +97,7 @@ namespace ClientService.Migrations
                     ProductName = table.Column<string>(type: "text", nullable: false),
                     ActualPrice = table.Column<double>(type: "double precision", nullable: false),
                     ImageUrl = table.Column<string>(type: "text", nullable: false),
+                    MarketUrl = table.Column<string>(type: "text", nullable: false),
                     Remains = table.Column<int>(type: "integer", nullable: false),
                     IsDump = table.Column<bool>(type: "boolean", nullable: false),
                     MaxPrice = table.Column<double>(type: "double precision", nullable: false),
@@ -85,6 +107,12 @@ namespace ClientService.Migrations
                 {
                     table.PrimaryKey("PK_UserSettings", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductPoints_MerchantProductCode_CityCode_PointCode",
+                table: "ProductPoints",
+                columns: new[] { "MerchantProductCode", "CityCode", "PointCode" },
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -98,6 +126,9 @@ namespace ClientService.Migrations
 
             migrationBuilder.DropTable(
                 name: "IntegratedUsers");
+
+            migrationBuilder.DropTable(
+                name: "ProductPoints");
 
             migrationBuilder.DropTable(
                 name: "Users");
